@@ -6,12 +6,12 @@ import { SettlementContext } from "../context/SettlementContext";
 const PartyA = () => {
   const { amount, status, modifyAmount, lastModifiedBy } =
     useContext(SettlementContext);
-  const [newAmount, setNewAmount] = useState<number | "">(amount);
+  const [newAmount, setNewAmount] = useState<number | "">(amount || "");
   const [isModified, setIsModified] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
-    setNewAmount(amount);
+    setNewAmount(amount || "");
   }, [amount]);
 
   const handleSubmit = () => {
@@ -23,7 +23,7 @@ const PartyA = () => {
     } else {
       modifyAmount(Number(newAmount));
       setIsModified(false);
-      setShowPrompt(false); // Allow further editing after prompt is shown
+      setShowPrompt(false);
     }
   };
 
@@ -55,7 +55,11 @@ const PartyA = () => {
                     <input
                       type="number"
                       value={newAmount}
-                      onChange={(e) => setNewAmount(Number(e.target.value))}
+                      onChange={(e) =>
+                        setNewAmount(
+                          e.target.value !== "" ? Number(e.target.value) : ""
+                        )
+                      }
                       className="border p-2 mb-4 w-full text-black"
                     />
 
@@ -89,7 +93,9 @@ const PartyA = () => {
           <input
             type="number"
             value={newAmount}
-            onChange={(e) => setNewAmount(Number(e.target.value))}
+            onChange={(e) =>
+              setNewAmount(e.target.value !== "" ? Number(e.target.value) : "")
+            }
             className="border p-2 mb-4 w-full text-black"
           />
 

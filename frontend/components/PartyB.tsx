@@ -1,24 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import axios, { AxiosResponse } from "axios";
+
 import { SettlementContext } from "../context/SettlementContext";
 
 const PartyB = () => {
-  const { amount, status, setStatus, lastModifiedBy } =
-    useContext(SettlementContext);
-  const [localStatus, setLocalStatus] = useState<
-    "" | "PENDING" | "DISPUTE" | "SETTLED"
-  >(status);
+  const { amount, status, updateStatus } = useContext(SettlementContext);
+
   const [currentAmount, setCurrentAmount] = useState(amount);
   const [currentStatus, setCurrentStatus] = useState<
     "" | "PENDING" | "DISPUTE" | "SETTLED"
   >(status);
 
-  // Polling interval in milliseconds
   const POLLING_INTERVAL = 3000;
 
   useEffect(() => {
-    // Polling function to check for updates
     const poll = async () => {
       try {
         const response: AxiosResponse<{
@@ -33,17 +29,13 @@ const PartyB = () => {
         console.error("Error fetching settlement:", error);
       }
     };
-
-    // Set up polling interval
     const intervalId = setInterval(poll, POLLING_INTERVAL);
-
-    // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
-  }, [status, localStatus]);
+  }, [status]);
 
   const handleResponse = async (response: "DISPUTE" | "SETTLED") => {
-    await setStatus(response);
-    // Fetch the updated data after setting the status
+    updateStatus(response);
+
     try {
       const response: AxiosResponse<{
         amount: number;

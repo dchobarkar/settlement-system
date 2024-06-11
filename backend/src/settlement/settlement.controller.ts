@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
 
 import { Settlement } from './entity/settlement.entity';
 import { SettlementService } from './settlement.service';

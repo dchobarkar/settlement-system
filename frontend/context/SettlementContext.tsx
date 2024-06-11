@@ -1,13 +1,14 @@
 import React, { createContext, useState, ReactNode, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
-import { Settlement } from "../types/Settlement";
+
+import { Settlement } from "../types/settlement";
 
 interface SettlementContextType {
   amount: number;
   status: "PENDING" | "DISPUTE" | "SETTLED" | "";
   lastModifiedBy: "A" | "B" | "";
   setAmount: (amount: number) => void;
-  setStatus: (status: "PENDING" | "DISPUTE" | "SETTLED" | "") => void;
+  updateStatus: (status: "PENDING" | "DISPUTE" | "SETTLED" | "") => void;
   modifyAmount: (newAmount: number) => void;
 }
 
@@ -16,7 +17,7 @@ const defaultValue: SettlementContextType = {
   status: "",
   lastModifiedBy: "",
   setAmount: () => {},
-  setStatus: () => {},
+  updateStatus: () => {},
   modifyAmount: () => {},
 };
 
@@ -30,10 +31,8 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
     ""
   );
   const [lastModifiedBy, setLastModifiedBy] = useState<"A" | "B" | "">("");
-  const [promptShown, setPromptShown] = useState(false);
 
   useEffect(() => {
-    // Fetch the current settlement from the backend
     const fetchSettlement = async () => {
       try {
         const response: AxiosResponse<Settlement> = await axios.get(
@@ -44,7 +43,6 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
         setAmount(amount);
         setStatus(status);
         setLastModifiedBy(lastModifiedBy);
-        setPromptShown(false); // Reset the prompt shown state on load
       } catch (error) {
         console.error("Error fetching settlement:", error);
       }
@@ -55,7 +53,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
 
   const modifyAmount = async (newAmount: number) => {
     try {
-      if (id !== null) {
+      if (id) {
         const response: AxiosResponse<Settlement> = await axios.patch(
           `http://localhost:3001/settlement/${id}`,
           {
@@ -92,26 +90,22 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
     newStatus: "PENDING" | "DISPUTE" | "SETTLED" | ""
   ) => {
     try {
-      if (id !== null) {
-        const currentAmount = amount; // Ensure amount is correctly scoped
-        const response: AxiosResponse<Settlement> = await axios.patch(
-          `http://localhost:3001/settlement/${id}`,
-          {
-            amount: currentAmount,
-            status: newStatus,
-            lastModifiedBy: "B",
-          }
-        );
-        const {
-          amount: updatedAmount,
-          status: updatedStatus,
-          lastModifiedBy: updatedLastModifiedBy,
-        } = response.data;
-        setAmount(updatedAmount);
-        setStatus(updatedStatus);
-        setLastModifiedBy(updatedLastModifiedBy);
-        setPromptShown(true); // Set promptShown to true when Party B raises a dispute
-      }
+      const response: AxiosResponse<Settlement> = await axios.patch(
+        `http://localhost:3001/settlement/${id}`,
+        {
+          amount,
+          status: newStatus,
+          lastModifiedBy: "B",
+        }
+      );
+      const {
+        amount: updatedAmount,
+        status: updatedStatus,
+        lastModifiedBy: updatedLastModifiedBy,
+      } = response.data;
+      setAmount(updatedAmount);
+      setStatus(updatedStatus);
+      setLastModifiedBy(updatedLastModifiedBy);
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -124,7 +118,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
         status,
         lastModifiedBy,
         setAmount,
-        setStatus: updateStatus,
+        updateStatus,
         modifyAmount,
       }}
     >
