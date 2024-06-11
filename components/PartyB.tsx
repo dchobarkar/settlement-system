@@ -1,0 +1,44 @@
+import React, { useState } from "react";
+
+const PartyB = () => {
+  const [amount, setAmount] = useState<number | "">("");
+  const [status, setStatus] = useState<"PENDING" | "DISPUTE" | "SETTLED" | "">(
+    ""
+  );
+
+  const handleResponse = (response: "DISPUTE" | "SETTLED") => {
+    setStatus(response);
+  };
+
+  return (
+    <div className="p-4 max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Party B</h2>
+
+      {status && (
+        <div className="mb-4">
+          <p>Current Amount: {amount}</p>
+
+          {status === "PENDING" && (
+            <>
+              <button
+                onClick={() => handleResponse("SETTLED")}
+                className="bg-green-500 text-white p-2 rounded w-full mb-2"
+              >
+                Agree
+              </button>
+
+              <button
+                onClick={() => handleResponse("DISPUTE")}
+                className="bg-red-500 text-white p-2 rounded w-full"
+              >
+                Dispute
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PartyB;
