@@ -1,4 +1,7 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
+import axios, { AxiosResponse } from "axios";
+
+import { Settlement } from "../types/Settlement";
 
 interface SettlementContextType {
   amount: number;
@@ -28,15 +31,70 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
   );
   const [lastModifiedBy, setLastModifiedBy] = useState<"A" | "B" | "">("");
 
-  const modifyAmount = (newAmount: number) => {
-    setAmount(newAmount);
-    setStatus("PENDING");
-    setLastModifiedBy("A");
+  useEffect(() => {
+    // Fetch the current settlement from the backend
+    const fetchSettlement = async () => {
+      try {
+        const response: AxiosResponse<Settlement> = await axios.get(
+          "http://localhost:3001/settlement"
+        );
+        const { amount, status, lastModifiedBy } = response.data;
+
+        setAmount(amount);
+        setStatus(status);
+        setLastModifiedBy(lastModifiedBy);
+      } catch (error) {
+        console.error("Error fetching settlement:", error);
+      }
+    };
+
+    fetchSettlement();
+  }, []);
+
+  const modifyAmount = async (newAmount: number) => {
+    try {
+      const response: AxiosResponse<Settlement> = await axios.post(
+        "http://localhost:3001/settlement",
+        {
+          amount: newAmount,
+          status: "PENDING",
+          lastModifiedBy: "A",
+        }
+      );
+      const { amount, status, lastModifiedBy } = response.data;
+
+      setAmount(amount);
+      setStatus(status);
+      setLastModifiedBy(lastModifiedBy);
+    } catch (error) {
+      console.error("Error updating settlement:", error);
+    }
   };
 
-  const updateStatus = (newStatus: "PENDING" | "DISPUTE" | "SETTLED" | "") => {
-    setStatus(newStatus);
-    setLastModifiedBy("B");
+  const updateStatus = async (
+    newStatus: "PENDING" | "DISPUTE" | "SETTLED" | ""
+  ) => {
+    try {
+      const response: AxiosResponse<Settlement> = await axios.post(
+        "http://localhost:3001/settlement",
+        {
+          amount,
+          status: newStatus,
+          lastModifiedBy: "B",
+        }
+      );
+      const {
+        amount: updatedAmount,
+        status: updatedStatus,
+        lastModifiedBy: updatedLastModifiedBy,
+      } = response.data;
+
+      setAmount(updatedAmount);
+      setStatus(updatedStatus);
+      setLastModifiedBy(updatedLastModifiedBy);
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
   };
 
   return (
