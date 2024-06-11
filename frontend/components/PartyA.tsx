@@ -8,27 +8,31 @@ const PartyA = () => {
     useContext(SettlementContext);
   const [newAmount, setNewAmount] = useState<number | "">(amount);
   const [isModified, setIsModified] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
     setNewAmount(amount);
   }, [amount]);
 
   const handleSubmit = () => {
-    if (lastModifiedBy === "B") {
+    if (lastModifiedBy === "B" && !showPrompt) {
       alert(
         "Party B has already responded. Fetch the latest status before modifying."
       );
+      setShowPrompt(true);
     } else {
       modifyAmount(Number(newAmount));
       setIsModified(false);
+      setShowPrompt(false); // Allow further editing after prompt is shown
     }
   };
 
   const handleEdit = () => {
-    if (lastModifiedBy === "B") {
+    if (lastModifiedBy === "B" && !showPrompt) {
       alert(
         "Party B has already responded. Fetch the latest status before modifying."
       );
+      setShowPrompt(true);
     } else {
       setIsModified(true);
     }

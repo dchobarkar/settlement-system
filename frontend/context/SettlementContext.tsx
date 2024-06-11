@@ -30,6 +30,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
     ""
   );
   const [lastModifiedBy, setLastModifiedBy] = useState<"A" | "B" | "">("");
+  const [promptShown, setPromptShown] = useState(false);
 
   useEffect(() => {
     // Fetch the current settlement from the backend
@@ -43,6 +44,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
         setAmount(amount);
         setStatus(status);
         setLastModifiedBy(lastModifiedBy);
+        setPromptShown(false); // Reset the prompt shown state on load
       } catch (error) {
         console.error("Error fetching settlement:", error);
       }
@@ -108,6 +110,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
         setAmount(updatedAmount);
         setStatus(updatedStatus);
         setLastModifiedBy(updatedLastModifiedBy);
+        setPromptShown(true); // Set promptShown to true when Party B raises a dispute
       }
     } catch (error) {
       console.error("Error updating status:", error);
