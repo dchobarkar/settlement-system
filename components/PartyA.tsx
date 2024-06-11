@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+
+import { SettlementContext } from "../context/SettlementContext";
 
 const PartyA = () => {
-  const [amount, setAmount] = useState<number | "">("");
-  const [status, setStatus] = useState<"PENDING" | "DISPUTE" | "SETTLED" | "">(
-    ""
-  );
+  const { amount, status, modifyAmount, setStatus } =
+    useContext(SettlementContext);
+  const [newAmount, setNewAmount] = useState<number | "">(amount);
+
+  useEffect(() => {
+    setNewAmount(amount);
+  }, [amount]);
 
   const handleSubmit = () => {
-    setStatus("PENDING");
+    modifyAmount(Number(newAmount));
   };
 
   return (
@@ -37,8 +42,8 @@ const PartyA = () => {
         <div>
           <input
             type="number"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
+            value={newAmount}
+            onChange={(e) => setNewAmount(Number(e.target.value))}
             className="border p-2 mb-4 w-full text-black"
           />
 

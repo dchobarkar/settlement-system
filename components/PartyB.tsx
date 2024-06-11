@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+
+import { SettlementContext } from "../context/SettlementContext";
 
 const PartyB = () => {
-  const [amount, setAmount] = useState<number | "">("");
-  const [status, setStatus] = useState<"PENDING" | "DISPUTE" | "SETTLED" | "">(
-    ""
-  );
+  const { amount, status, setStatus } = useContext(SettlementContext);
 
   const handleResponse = (response: "DISPUTE" | "SETTLED") => {
     setStatus(response);

@@ -1,5 +1,5 @@
-// pages/party-a.tsx
 import React from "react";
+
 import PartyA from "../components/PartyA";
 
 const PartyAPage = () => {
