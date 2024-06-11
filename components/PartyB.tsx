@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 
 import { SettlementContext } from "../context/SettlementContext";
@@ -6,6 +6,26 @@ import { SettlementContext } from "../context/SettlementContext";
 const PartyB = () => {
   const { amount, status, setStatus, lastModifiedBy } =
     useContext(SettlementContext);
+  const [localStatus, setLocalStatus] = useState(status);
+
+  // Polling interval in milliseconds
+  const POLLING_INTERVAL = 3000;
+
+  useEffect(() => {
+    // Polling function to check for updates
+    const poll = () => {
+      // Update local status to trigger re-render if the status has changed
+      if (status !== localStatus) {
+        setLocalStatus(status);
+      }
+    };
+
+    // Set up polling interval
+    const intervalId = setInterval(poll, POLLING_INTERVAL);
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [status, localStatus]);
 
   const handleResponse = (response: "DISPUTE" | "SETTLED") => {
     setStatus(response);
