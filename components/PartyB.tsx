@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import Link from "next/link";
 
 import { SettlementContext } from "../context/SettlementContext";
 
@@ -34,6 +35,12 @@ const PartyB = () => {
               </button>
             </>
           )}
+
+          <Link href="/party-a">
+            <p className="bg-blue-500 text-white p-2 rounded w-full mt-2 block text-center">
+              Go to Party A
+            </p>
+          </Link>
         </div>
       )}
     </div>
