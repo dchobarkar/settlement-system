@@ -4,7 +4,8 @@ import Link from "next/link";
 import { SettlementContext } from "../context/SettlementContext";
 
 const PartyB = () => {
-  const { amount, status, setStatus } = useContext(SettlementContext);
+  const { amount, status, setStatus, lastModifiedBy } =
+    useContext(SettlementContext);
 
   const handleResponse = (response: "DISPUTE" | "SETTLED") => {
     setStatus(response);

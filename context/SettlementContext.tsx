@@ -3,6 +3,7 @@ import React, { createContext, useState, ReactNode } from "react";
 interface SettlementContextType {
   amount: number;
   status: "PENDING" | "DISPUTE" | "SETTLED" | "";
+  lastModifiedBy: "A" | "B" | "";
   setAmount: (amount: number) => void;
   setStatus: (status: "PENDING" | "DISPUTE" | "SETTLED" | "") => void;
   modifyAmount: (newAmount: number) => void;
@@ -11,6 +12,7 @@ interface SettlementContextType {
 const defaultValue: SettlementContextType = {
   amount: 0,
   status: "",
+  lastModifiedBy: "",
   setAmount: () => {},
   setStatus: () => {},
   modifyAmount: () => {},
@@ -24,15 +26,29 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
   const [status, setStatus] = useState<"PENDING" | "DISPUTE" | "SETTLED" | "">(
     ""
   );
+  const [lastModifiedBy, setLastModifiedBy] = useState<"A" | "B" | "">("");
 
   const modifyAmount = (newAmount: number) => {
     setAmount(newAmount);
     setStatus("PENDING");
+    setLastModifiedBy("A");
+  };
+
+  const updateStatus = (newStatus: "PENDING" | "DISPUTE" | "SETTLED" | "") => {
+    setStatus(newStatus);
+    setLastModifiedBy("B");
   };
 
   return (
     <SettlementContext.Provider
-      value={{ amount, status, setAmount, setStatus, modifyAmount }}
+      value={{
+        amount,
+        status,
+        lastModifiedBy,
+        setAmount,
+        setStatus: updateStatus,
+        modifyAmount,
+      }}
     >
       {children}
     </SettlementContext.Provider>

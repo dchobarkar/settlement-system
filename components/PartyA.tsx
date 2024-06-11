@@ -4,16 +4,34 @@ import Link from "next/link";
 import { SettlementContext } from "../context/SettlementContext";
 
 const PartyA = () => {
-  const { amount, status, modifyAmount, setStatus } =
+  const { amount, status, modifyAmount, lastModifiedBy } =
     useContext(SettlementContext);
   const [newAmount, setNewAmount] = useState<number | "">(amount);
+  const [isModified, setIsModified] = useState(false);
 
   useEffect(() => {
     setNewAmount(amount);
   }, [amount]);
 
   const handleSubmit = () => {
-    modifyAmount(Number(newAmount));
+    if (lastModifiedBy === "B") {
+      alert(
+        "Party B has already responded. Fetch the latest status before modifying."
+      );
+    } else {
+      modifyAmount(Number(newAmount));
+      setIsModified(false);
+    }
+  };
+
+  const handleEdit = () => {
+    if (lastModifiedBy === "B") {
+      alert(
+        "Party B has already responded. Fetch the latest status before modifying."
+      );
+    } else {
+      setIsModified(true);
+    }
   };
 
   return (
@@ -28,13 +46,31 @@ const PartyA = () => {
             {status !== "SETTLED" && (
               <div>
                 <p>Amount: {amount}</p>
+                {isModified ? (
+                  <div>
+                    <input
+                      type="number"
+                      value={newAmount}
+                      onChange={(e) => setNewAmount(Number(e.target.value))}
+                      className="border p-2 mb-4 w-full text-black"
+                    />
 
-                <button
-                  onClick={() => setStatus("")}
-                  className="bg-gray-500 text-white p-2 rounded w-full"
-                >
-                  Edit
-                </button>
+                    <button
+                      onClick={handleSubmit}
+                      className="bg-blue-500 text-white p-2 rounded w-full"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleEdit}
+                    className="bg-gray-500 text-white p-2 rounded w-full"
+                  >
+                    Edit
+                  </button>
+                )}
+
                 <Link href="/party-b">
                   <p className="bg-blue-500 text-white p-2 rounded w-full mt-2 block text-center">
                     Go to Party B
