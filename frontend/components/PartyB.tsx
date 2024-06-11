@@ -1,22 +1,36 @@
 import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
-
+import axios, { AxiosResponse } from "axios";
 import { SettlementContext } from "../context/SettlementContext";
 
 const PartyB = () => {
   const { amount, status, setStatus, lastModifiedBy } =
     useContext(SettlementContext);
-  const [localStatus, setLocalStatus] = useState(status);
+  const [localStatus, setLocalStatus] = useState<
+    "" | "PENDING" | "DISPUTE" | "SETTLED"
+  >(status);
+  const [currentAmount, setCurrentAmount] = useState(amount);
+  const [currentStatus, setCurrentStatus] = useState<
+    "" | "PENDING" | "DISPUTE" | "SETTLED"
+  >(status);
 
   // Polling interval in milliseconds
   const POLLING_INTERVAL = 3000;
 
   useEffect(() => {
     // Polling function to check for updates
-    const poll = () => {
-      // Update local status to trigger re-render if the status has changed
-      if (status !== localStatus) {
-        setLocalStatus(status);
+    const poll = async () => {
+      try {
+        const response: AxiosResponse<{
+          amount: number;
+          status: "" | "PENDING" | "DISPUTE" | "SETTLED";
+          lastModifiedBy: string;
+        }> = await axios.get("http://localhost:3001/settlement");
+        const { amount, status } = response.data;
+        setCurrentAmount(amount);
+        setCurrentStatus(status);
+      } catch (error) {
+        console.error("Error fetching settlement:", error);
       }
     };
 
@@ -27,19 +41,32 @@ const PartyB = () => {
     return () => clearInterval(intervalId);
   }, [status, localStatus]);
 
-  const handleResponse = (response: "DISPUTE" | "SETTLED") => {
-    setStatus(response);
+  const handleResponse = async (response: "DISPUTE" | "SETTLED") => {
+    await setStatus(response);
+    // Fetch the updated data after setting the status
+    try {
+      const response: AxiosResponse<{
+        amount: number;
+        status: "" | "PENDING" | "DISPUTE" | "SETTLED";
+        lastModifiedBy: string;
+      }> = await axios.get("http://localhost:3001/settlement");
+      const { amount, status } = response.data;
+      setCurrentAmount(amount);
+      setCurrentStatus(status);
+    } catch (error) {
+      console.error("Error fetching settlement:", error);
+    }
   };
 
   return (
     <div className="p-4 max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-4">Party B</h2>
 
-      {status && (
+      {currentStatus && (
         <div className="mb-4">
-          <p>Current Amount: {amount}</p>
+          <p>Current Amount: {currentAmount}</p>
 
-          {status === "PENDING" && (
+          {currentStatus === "PENDING" && (
             <>
               <button
                 onClick={() => handleResponse("SETTLED")}
