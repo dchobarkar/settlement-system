@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import { Settlement } from './entity/settlement.entity';
 
 @Injectable()
@@ -12,7 +11,21 @@ export class SettlementService {
   ) {}
 
   async getLatestSettlement(): Promise<Settlement> {
-    return await this.settlementsRepository.findOne({ order: { id: 'DESC' } });
+    const activeSettlement = await this.settlementsRepository.findOne({
+      where: [{ status: 'PENDING' }, { status: 'DISPUTE' }],
+      order: { id: 'DESC' },
+    });
+
+    if (activeSettlement) {
+      return activeSettlement;
+    }
+
+    // If no active settlement, return the latest settled one or a default value
+    const latestSettlement = await this.settlementsRepository.findOne({
+      order: { id: 'DESC' },
+    });
+
+    return latestSettlement || this.defaultSettlement();
   }
 
   async createSettlement(
@@ -25,7 +38,24 @@ export class SettlementService {
       status,
       lastModifiedBy,
     });
-
     return await this.settlementsRepository.save(settlement);
+  }
+
+  async updateSettlement(
+    id: number,
+    amount: number,
+    status: string,
+    lastModifiedBy: string,
+  ): Promise<Settlement> {
+    await this.settlementsRepository.update(id, {
+      amount,
+      status,
+      lastModifiedBy,
+    });
+    return this.settlementsRepository.findOne({ where: { id } });
+  }
+
+  private defaultSettlement(): Settlement {
+    return { id: 0, amount: 0, status: '', lastModifiedBy: '' };
   }
 }

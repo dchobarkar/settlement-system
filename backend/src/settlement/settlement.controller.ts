@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
 
 import { Settlement } from './entity/settlement.entity';
 import { SettlementService } from './settlement.service';
@@ -19,6 +19,21 @@ export class SettlementController {
     @Body('lastModifiedBy') lastModifiedBy: string,
   ): Promise<Settlement> {
     return await this.settlementService.createSettlement(
+      amount,
+      status,
+      lastModifiedBy,
+    );
+  }
+
+  @Patch(':id')
+  async updateSettlement(
+    @Param('id') id: number,
+    @Body('amount') amount: number,
+    @Body('status') status: string,
+    @Body('lastModifiedBy') lastModifiedBy: string,
+  ): Promise<Settlement> {
+    return await this.settlementService.updateSettlement(
+      id,
       amount,
       status,
       lastModifiedBy,
