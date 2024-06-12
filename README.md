@@ -80,43 +80,13 @@ This application implements a settlement process between two parties, Party A an
 3. You can either agree or dispute the amount.
 4. If you dispute, Party A will be notified and can modify the amount.
 
-## Project Structure
-
-```
-project-root
-│
-├── backend
-│   ├── src
-│   │   ├── app.module.ts
-│   │   ├── main.ts
-│   │   ├── settlement.controller.ts
-│   │   ├── settlement.entity.ts
-│   │   ├── settlement.service.ts
-│   │
-│   ├── tsconfig.json
-│   ├── package.json
-│   └── ...
-│
-├── frontend
-│   ├── pages
-│   │   ├── index.tsx
-│   │   ├── party-a.tsx
-│   │   ├── party-b.tsx
-│   │
-│   ├── context
-│   │   └── SettlementContext.tsx
-│   │
-│   ├── types
-│   │   └── Settlement.ts
-│   │
-│   ├── tsconfig.json
-│   ├── package.json
-│   └── ...
-│
-└── README.md
-```
-
 ## Additional Information
 
 - **Polling Interval:** The frontend uses a polling interval of 3 seconds to fetch the latest settlement data.
 - **Error Handling:** Basic error handling is implemented for network requests.
+
+## Contact
+
+Darshan Chobarkar - [@dchobarkar](https://www.linkedin.com/in/dchobarkar/) - [@barbatos\_\_08](https://twitter.com/barbatos__08) - contact@darshanwebdev.com
+
+Project Link: [https://github.com/dchobarkar/settlement-system](https://github.com/dchobarkar/settlement-system)

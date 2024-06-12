@@ -16,7 +16,7 @@ export class SettlementService {
       where: [{ status: 'PENDING' }, { status: 'DISPUTE' }],
       order: { id: 'DESC' },
     });
-    console.log(activeSettlement);
+
     if (activeSettlement) return activeSettlement;
 
     return { id: null, amount: 0, status: '', lastModifiedBy: '' };
