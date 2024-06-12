@@ -1,5 +1,5 @@
 export interface Settlement {
-  id?: number;
+  id: number;
   amount: number;
   status: "PENDING" | "DISPUTE" | "SETTLED" | "";
   lastModifiedBy: "A" | "B" | "";

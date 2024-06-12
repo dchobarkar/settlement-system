@@ -19,7 +19,7 @@ export class SettlementService {
 
     if (activeSettlement) return activeSettlement;
 
-    return { id: null, amount: 0, status: '', lastModifiedBy: '' };
+    return { id: -1, amount: 0, status: '', lastModifiedBy: '' };
   }
 
   async createSettlement(
@@ -48,7 +48,7 @@ export class SettlementService {
       lastModifiedBy,
     });
 
-    return this.settlementsRepository.findOne({
+    return await this.settlementsRepository.findOne({
       where: { id },
     });
   }

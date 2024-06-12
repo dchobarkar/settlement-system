@@ -4,6 +4,7 @@ import axios, { AxiosResponse } from "axios";
 import { Settlement } from "../types/settlement";
 
 interface SettlementContextType {
+  id: number;
   amount: number;
   status: "PENDING" | "DISPUTE" | "SETTLED" | "";
   lastModifiedBy: "A" | "B" | "";
@@ -13,6 +14,7 @@ interface SettlementContextType {
 }
 
 const defaultValue: SettlementContextType = {
+  id: -1,
   amount: 0,
   status: "",
   lastModifiedBy: "",
@@ -25,7 +27,7 @@ export const SettlementContext =
   createContext<SettlementContextType>(defaultValue);
 
 const SettlementProvider = ({ children }: { children: ReactNode }) => {
-  const [id, setId] = useState<number | null>(null);
+  const [id, setId] = useState<number>(-1);
   const [amount, setAmount] = useState(0);
   const [status, setStatus] = useState<"PENDING" | "DISPUTE" | "SETTLED" | "">(
     ""
@@ -39,7 +41,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
           "http://localhost:3001/settlement"
         );
         const { id, amount, status, lastModifiedBy } = response.data;
-        setId(id ?? null);
+        setId(id);
         setAmount(amount);
         setStatus(status);
         setLastModifiedBy(lastModifiedBy);
@@ -53,7 +55,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
 
   const modifyAmount = async (newAmount: number) => {
     try {
-      if (id) {
+      if (id != -1) {
         const response: AxiosResponse<Settlement> = await axios.patch(
           `http://localhost:3001/settlement/${id}`,
           {
@@ -76,7 +78,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
           }
         );
         const { id, amount, status, lastModifiedBy } = response.data;
-        setId(id ?? null);
+        setId(id);
         setAmount(amount);
         setStatus(status);
         setLastModifiedBy(lastModifiedBy);
@@ -98,14 +100,9 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
           lastModifiedBy: "B",
         }
       );
-      const {
-        amount: updatedAmount,
-        status: updatedStatus,
-        lastModifiedBy: updatedLastModifiedBy,
-      } = response.data;
-      setAmount(updatedAmount);
-      setStatus(updatedStatus);
-      setLastModifiedBy(updatedLastModifiedBy);
+      setAmount(response.data.amount);
+      setStatus(response.data.status);
+      setLastModifiedBy(response.data.lastModifiedBy);
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -114,6 +111,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
   return (
     <SettlementContext.Provider
       value={{
+        id,
         amount,
         status,
         lastModifiedBy,
