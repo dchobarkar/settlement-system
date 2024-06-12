@@ -6,7 +6,6 @@ import { SettlementContext } from "../context/SettlementContext";
 
 const PartyB = () => {
   const { amount, status, updateStatus } = useContext(SettlementContext);
-
   const [currentAmount, setCurrentAmount] = useState(amount);
   const [currentStatus, setCurrentStatus] = useState<
     "" | "PENDING" | "DISPUTE" | "SETTLED"
@@ -25,38 +24,27 @@ const PartyB = () => {
         const { amount, status } = response.data;
         setCurrentAmount(amount);
         setCurrentStatus(status);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching settlement:", error);
       }
     };
     const intervalId = setInterval(poll, POLLING_INTERVAL);
     return () => clearInterval(intervalId);
-  }, [status]);
+  }, []);
 
   const handleResponse = async (response: "DISPUTE" | "SETTLED") => {
     updateStatus(response);
-
-    try {
-      const response: AxiosResponse<{
-        amount: number;
-        status: "" | "PENDING" | "DISPUTE" | "SETTLED";
-        lastModifiedBy: string;
-      }> = await axios.get("http://localhost:3001/settlement");
-      const { amount, status } = response.data;
-      setCurrentAmount(amount);
-      setCurrentStatus(status);
-    } catch (error) {
-      console.error("Error fetching settlement:", error);
-    }
   };
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Party B</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Party B</h2>
 
-      {currentStatus && (
+      {currentStatus ? (
         <div className="mb-4">
-          <p>Current Amount: {currentAmount}</p>
+          <p className="text-center">Current Amount: {currentAmount}</p>
+          <p className="text-center">Status: {currentStatus}</p>
 
           {currentStatus === "PENDING" && (
             <>
@@ -82,6 +70,8 @@ const PartyB = () => {
             </p>
           </Link>
         </div>
+      ) : (
+        <p className="text-center">No trasaction</p>
       )}
     </div>
   );

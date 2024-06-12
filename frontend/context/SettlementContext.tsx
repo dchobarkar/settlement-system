@@ -33,6 +33,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
     ""
   );
   const [lastModifiedBy, setLastModifiedBy] = useState<"A" | "B" | "">("");
+  const [showPrompt, setShowPrompt] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchSettlement = async () => {
@@ -54,6 +55,29 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const modifyAmount = async (newAmount: number) => {
+    try {
+      const response: AxiosResponse<Settlement> = await axios.get(
+        "http://localhost:3001/settlement/"
+      );
+      const { status, lastModifiedBy: updatedModifiedBy } = response.data;
+      if (lastModifiedBy === "A" && updatedModifiedBy === "") {
+        alert(
+          "Party B has already settled the transaction. Fetch the latest status before modifying."
+        );
+        return;
+      }
+      setStatus(status);
+      if (updatedModifiedBy === "B" && !showPrompt) {
+        alert(
+          "Party B has already responded. Fetch the latest status before modifying."
+        );
+        setShowPrompt(true);
+        return;
+      }
+    } catch (error) {
+      console.error("Error fetching settlement:", error);
+    }
+
     try {
       if (id != -1) {
         const response: AxiosResponse<Settlement> = await axios.patch(
@@ -86,6 +110,7 @@ const SettlementProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error updating settlement:", error);
     }
+    setShowPrompt(false);
   };
 
   const updateStatus = async (
