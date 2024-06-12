@@ -24,7 +24,6 @@ const PartyB = () => {
         const { amount, status } = response.data;
         setCurrentAmount(amount);
         setCurrentStatus(status);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching settlement:", error);
       }
@@ -35,6 +34,7 @@ const PartyB = () => {
 
   const handleResponse = async (response: "DISPUTE" | "SETTLED") => {
     updateStatus(response);
+    setCurrentStatus(response);
   };
 
   return (
